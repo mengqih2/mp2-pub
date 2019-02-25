@@ -440,6 +440,17 @@ public final class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * tileclicked.
+     * @param x x
+     * @param y y
+     */
+    public void tileClicked(final int x, final int y) {
+        if (tryPlayAt(x, y)) {
+            updateDisplay();
+        }
+    }
+
+    /**
      * Sets the game manager for this activity.
      * <p>
      * For testing purposes only.

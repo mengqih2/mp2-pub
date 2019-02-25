@@ -26,6 +26,12 @@ public class ConnectN {
     private  boolean wid = false;
     /**999. */
     private boolean hei = false;
+    /**66.*/
+    private boolean end = false;
+    /**6.*/
+    private boolean nn = false;
+    /**board. */
+    private Player[][] board = null;
     /**
      * Creates a new ConnectN board with a given width, height, and N value.
      * @param setWidth the width for the new ConnectN board
@@ -37,17 +43,26 @@ public class ConnectN {
         this.height = setHeight;
         this.n = setN;
         this.start = false;
+        this.wid = true;
+        hei = true;
+        nn = true;
         if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             this.width = 0;
             this.n = 0;
+            wid = false;
+            nn = false;
         }
         if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             this.height = 0;
             this.n = 0;
+            hei = false;
+            nn = false;
         }
         if (setN < MIN_N || setN >= width || setN >= height) {
             this.n = 0;
+            nn = false;
         }
+        board = new Player[width][height];
     }
     /**Create a new ConnectN board with uninitialized width, height, and N value.*/
     public ConnectN() {
@@ -67,6 +82,7 @@ public class ConnectN {
         if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             this.height = 0;
         }
+        board = new Player[width][height];
     }
 
     /**
@@ -77,6 +93,10 @@ public class ConnectN {
         this.width = otherBoard.width;
         this.height = otherBoard.height;
         this.n = otherBoard.n;
+        this.start = otherBoard.start;
+        this.wid = otherBoard.wid;
+        this.hei = otherBoard.hei;
+        this.board = otherBoard.board;
     }
 
     /**
@@ -105,6 +125,7 @@ public class ConnectN {
             this.n = 0;
         }
         this.wid = true;
+        board = new Player[width][height];
         return true;
     }
 
@@ -135,6 +156,7 @@ public class ConnectN {
             this.n = 0;
         }
         this.hei = true;
+        board = new Player[width][height];
         return true;
     }
 
@@ -162,7 +184,17 @@ public class ConnectN {
             return false;
         }
         this.n = newN;
+        nn = true;
         return true;
+        /*if (!wid || !hei  || start || newN < MIN_N || width < MIN_WIDTH
+                || width > MAX_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT || newN >= height || newN >= width) {
+            return false;
+        }*/
+        //this.n = 0;
+        //return false;
+        //this.n = newN;
+        //this.nn = true;
+        //return true;
     }
 
     /**
@@ -173,6 +205,19 @@ public class ConnectN {
      * @return true if the move succeeds, false on error
      */
     public boolean setBoardAt(final Player player, final int setX, final int setY) {
+        //if (!wid || !hei || !nn) {
+          //
+        if (end) {
+            return false;
+        }
+        if (setX < 0 || setX > width - 1 || setY < 0 || setY > height - 1 || board[setX][setY] != null) {
+            return false;
+        }
+        if (setY > 0 && board[setX][setY - 1] == null) {
+            return false;
+        }
+        board[setX][setY] = player;
+        this.start = true;
         return true;
     }
 
@@ -224,7 +269,16 @@ public class ConnectN {
     public static ConnectN create(final int width,
                                   final int height,
                                   final int n) {
-        return null;
+        if (width < MIN_WIDTH || width > MAX_WIDTH) {
+            return null;
+        }
+        if (height < MIN_HEIGHT || height > MAX_HEIGHT) {
+            return null;
+        }
+        if (n < MIN_N || n >= width || n >= height) {
+            return  null;
+        }
+        return new ConnectN(width, height, n);
     }
 
     /**
@@ -239,7 +293,23 @@ public class ConnectN {
                                         final int width,
                                         final int height,
                                         final int n) {
-        return null;
+        if (width < MIN_WIDTH || width > MAX_WIDTH) {
+            return null;
+        }
+        if (height < MIN_HEIGHT || height > MAX_HEIGHT) {
+            return null;
+        }
+        if (n < MIN_N || n >= width || n >= height) {
+            return  null;
+        }
+        if (number <= 1) {
+            return null;
+        }
+        ConnectN[] c = new ConnectN[number];
+        for (int i = 0; i < number; i++) {
+            c[i] = new ConnectN(width, height, n);
+        }
+        return c;
     }
 
     /**
@@ -250,6 +320,38 @@ public class ConnectN {
      */
     public static boolean compareBoards(final ConnectN firstBoard,
                                         final ConnectN secondBoard) {
+        if (firstBoard == null && secondBoard == null) {
+            return true;
+        }
+        if (firstBoard == null || secondBoard == null) {
+            return false;
+        }
+        if (firstBoard.width != secondBoard.width) {
+            return false;
+        }
+        if (firstBoard.height != secondBoard.height) {
+            return false;
+        }
+        if (firstBoard.n != secondBoard.n) {
+            return false;
+        }
+        for (int i = 0; i < firstBoard.width; i++) {
+            for (int j = 0; j < firstBoard.height; j++) {
+                if (secondBoard.board[i][j] == null) {
+                    if (firstBoard.board[i][j] != null) {
+                        return false;
+                    }
+                } else {
+                    if (firstBoard.board[i][j] == null) {
+                        return false;
+                    } else {
+                        if (!secondBoard.board[i][j].equals(firstBoard.board[i][j])) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
         return true;
     }
 
@@ -259,6 +361,11 @@ public class ConnectN {
      * @return true if all passed boards are the same, false otherwise
      */
     public static boolean compareBoards(final ConnectN... boards) {
+        for (ConnectN m: boards) {
+            if (!compareBoards(boards[0],m)) {
+                return  false;
+            }
+        }
         return true;
     }
 
