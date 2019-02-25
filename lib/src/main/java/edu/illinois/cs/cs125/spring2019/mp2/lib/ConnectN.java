@@ -362,7 +362,7 @@ public class ConnectN {
      */
     public static boolean compareBoards(final ConnectN... boards) {
         for (ConnectN m: boards) {
-            if (!compareBoards(boards[0],m)) {
+            if (!compareBoards(boards[0], m)) {
                 return  false;
             }
         }
