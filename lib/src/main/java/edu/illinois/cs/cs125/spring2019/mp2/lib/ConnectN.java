@@ -97,6 +97,8 @@ public class ConnectN {
         this.wid = otherBoard.wid;
         this.hei = otherBoard.hei;
         this.board = otherBoard.board;
+        this.end = otherBoard.end;
+        this.nn = otherBoard.nn;
     }
 
     /**
@@ -205,15 +207,10 @@ public class ConnectN {
      * @return true if the move succeeds, false on error
      */
     public boolean setBoardAt(final Player player, final int setX, final int setY) {
-        //if (!wid || !hei || !nn) {
-          //
-        if (end) {
-            return false;
-        }
-        if (setX < 0 || setX > width - 1 || setY < 0 || setY > height - 1 || board[setX][setY] != null) {
-            return false;
-        }
-        if (setY > 0 && board[setX][setY - 1] == null) {
+        if (setX < 0 || setX > width - 1
+                || setY < 0 || setY > height - 1
+                || board[setX][setY] != null || end
+                || setY > 0 && board[setX][setY - 1] == null) {
             return false;
         }
         board[setX][setY] = player;
@@ -229,7 +226,24 @@ public class ConnectN {
      */
     public boolean setBoardAt(final Player player,
                               final int setX) {
-        return true;
+        if (setX < 0 || setX > width - 1
+                || end || player == null) {
+            return false;
+        }
+        if (board[setX][0] == null) {
+            board[setX][0] = player;
+            this.start = true;
+            return true;
+        }
+        for (int i = 1; i < board[setX].length; i++) {
+            if (board[setX][i - 1] != null && board[setX][i] == null) {
+                board[setX][i] = player;
+                this.start = true;
+                return true;
+            }
+        }
+        return false;
+
     }
 
     /**
@@ -240,7 +254,12 @@ public class ConnectN {
      */
     public Player getBoardAt(final int getX,
                              final int getY) {
-        return null;
+        if (getX > width - 1 || getX < 0 || getY > height - 1
+                || getY < 0 || !start || board[getX][getY] == null) {
+            return null;
+        }
+        return board[getX][getY];
+
     }
 
     /**
@@ -248,7 +267,21 @@ public class ConnectN {
      * @return a copy of the current board
      */
     public Player[][] getBoard() {
-        return null;
+        if (!wid || !hei) {
+            return null;
+        } else {
+            Player[][] nb = new Player[width][height];
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    if (board[i][j] == null) {
+                        nb[i][j] = null;
+                    } else {
+                        nb[i][j] = new Player(board[i][j]);
+                    }
+                }
+            }
+            return nb;
+        }
     }
 
     /**
@@ -256,6 +289,103 @@ public class ConnectN {
      * @return the winner of the game, or null if the game has not ended
      */
     public Player getWinner() {
+        if (!wid || !hei || !nn) {
+            return null;
+        }
+        if (n <= width && n <= height) {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j <= height - n; j++) {
+                    Player temp = board[i][j];
+                    boolean a = true;
+                    if (temp != null) {
+                        for (int k = j + 1; k < j + n; k++) {
+                            if (board[i][k] != null && board[i][k].equals(temp)) {
+                                continue;
+                            } else {
+                                a = false;
+                                break;
+                            }
+                        }
+                        if (a) {
+                            this.end = true;
+                            temp.addScore();
+                            return temp;
+                        }
+                    }
+                }
+            }
+            Player[] hang = new Player[width];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    hang[j] = board[j][i];
+                }
+                for (int k = 0; k <= width - n; k++) {
+                    Player temp = hang[k];
+                    boolean a = true;
+                    for (int l = k + 1; l < k + n; l++) {
+                        if (hang[l] != null && hang[l].equals(temp)) {
+                            continue;
+                        } else {
+                            a = false;
+                            break;
+                        }
+                    }
+                    if (a) {
+                        this.end = true;
+                        temp.addScore();
+                        return temp;
+                    }
+                }
+            }
+        }
+        if (n <= width && n > height) {
+            Player[] hang = new Player[width];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    hang[j] = board[j][i];
+                }
+                for (int k = 0; k <= width - n; k++) {
+                    Player temp = hang[k];
+                    boolean a = true;
+                    for (int l = k + 1; l < k + n; l++) {
+                        if (hang[l] != null && hang[l].equals(temp)) {
+                            continue;
+                        } else {
+                            a = false;
+                            break;
+                        }
+                    }
+                    if (a) {
+                        this.end = true;
+                        temp.addScore();
+                        return temp;
+                    }
+                }
+            }
+        }
+        if (n <= height && n > width) {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j <= height - n; j++) {
+                    Player temp = board[i][j];
+                    boolean a = true;
+                    if (temp != null) {
+                        for (int k = j + 1; k < j + n; k++) {
+                            if (board[i][k] != null && board[i][k].equals(temp)) {
+                                continue;
+                            } else {
+                                a = false;
+                                break;
+                            }
+                        }
+                        if (a) {
+                            this.end = true;
+                            temp.addScore();
+                            return temp;
+                        }
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -337,17 +467,17 @@ public class ConnectN {
         }
         for (int i = 0; i < firstBoard.width; i++) {
             for (int j = 0; j < firstBoard.height; j++) {
-                if (secondBoard.board[i][j] == null) {
-                    if (firstBoard.board[i][j] != null) {
+                if (firstBoard.board[i][j] == null && secondBoard.board[i][j] == null) {
+                    continue;
+                } else {
+                    if (firstBoard.board[i][j] == null && secondBoard.board[i][j] != null) {
                         return false;
                     }
-                } else {
-                    if (firstBoard.board[i][j] == null) {
+                    if (firstBoard.board[i][j] != null && secondBoard.board[i][j] == null) {
                         return false;
-                    } else {
-                        if (!secondBoard.board[i][j].equals(firstBoard.board[i][j])) {
-                            return false;
-                        }
+                    }
+                    if (!firstBoard.board[i][j].equals(secondBoard.board[i][j])) {
+                        return false;
                     }
                 }
             }
