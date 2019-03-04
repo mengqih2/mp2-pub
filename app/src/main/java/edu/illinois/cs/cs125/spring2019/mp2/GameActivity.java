@@ -395,8 +395,8 @@ public final class GameActivity extends AppCompatActivity {
         /*
          * Update the winner and who's turn is next.
          */
-        Player winner = game.getWinner();
-        if (winner == null) {
+        Player r = game.getWinner();
+        if (r == null) {
             /*
              * The game continues!
              *
@@ -405,6 +405,7 @@ public final class GameActivity extends AppCompatActivity {
              */
             toPlayLabels[playerToMove].setVisibility(View.VISIBLE);
             toPlayLabels[getPlayerNotMoving()].setVisibility(View.GONE);
+            winnerLabel.setVisibility(View.GONE);
         } else {
             /*
              * The game is over!
@@ -412,8 +413,16 @@ public final class GameActivity extends AppCompatActivity {
              * Make all the to play labels invisible, make the winner label visible, set the text to "(Player's
              * name) wins!", and set the text color of the winner label to the appropriate color depending on who won.
              */
-            for (View v : toPlayLabels) {
-                v.setVisibility(View.GONE);
+            winnerLabel.setVisibility(View.VISIBLE);
+            for (View k : toPlayLabels) {
+                k.setVisibility(View.GONE);
+            }
+            String w = r.getName() + " wins!";
+            winnerLabel.setText(w);
+            if (r.getName().equals(players[1].getName())) {
+                winnerLabel.setTextColor(getColor(playerColorIds[1]));
+            } else {
+                winnerLabel.setTextColor(getColor(playerColorIds[0]));
             }
         }
 
