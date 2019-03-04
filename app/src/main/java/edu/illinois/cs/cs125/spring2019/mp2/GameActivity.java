@@ -403,10 +403,10 @@ public final class GameActivity extends AppCompatActivity {
              * Adjust the UI so that the player to play next is visible and make sure that the winner label is not
              * visible.
              */
-            winnerLabel.setVisibility(View.GONE);
+
             toPlayLabels[playerToMove].setVisibility(View.VISIBLE);
             toPlayLabels[getPlayerNotMoving()].setVisibility(View.GONE);
-
+            winnerLabel.setVisibility(View.GONE);
         } else {
             /*
              * The game is over!
